@@ -5,9 +5,12 @@
 #include "CoreMinimal.h"
 #include "MenuSystem/MenuInterface.h"
 #include "Engine/GameInstance.h"
+#include "OnlineSubsystem.h"
+#include "OnlineSessionInterface.h"
 #include "PGameInstance.generated.h"
 
 class UUserWidget;
+class UMainMenu;
 
 /**
  * 
@@ -23,38 +26,66 @@ public:
 	virtual void Init() override;
 
 	UFUNCTION()
-	virtual void Host() override;
-
-	UFUNCTION()
-		virtual void Quit() override;
+	virtual void Host(FString ServerName) override;
 
 	UFUNCTION()
 	virtual void OpenMainMenu() override;
 
 	UFUNCTION()
-	virtual void Join(const FString& Address) override;
+	virtual void Join(uint32 Index) override;
+
+	UFUNCTION()
+	virtual void RefreshServerList() override;
+
+	UFUNCTION()
+	virtual void PlayerReadyUp() override;
+
+	UFUNCTION()
+	virtual void StartGame() override;
 
 	UFUNCTION(BlueprintCallable)
-	void LoadMenu();
+	void LoadMenuWidget();
 
 	UFUNCTION(BlueprintCallable)
 	void OpenGameMenu();
 
-protected:
-
+	UFUNCTION(BlueprintCallable)
+	void OpenLobbyMenu();
+	
 private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 	TSubclassOf<UUserWidget> MainMenuWidget;
 
+	UMainMenu* MainMenu;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 	TSubclassOf<UUserWidget> GameMenutWidget;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
+	TSubclassOf<UUserWidget> LobbyMenuWidget;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Map")
-	FString DefaultGameMap;
+	FString DefaultLobbyMap;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Menu")
 	FString DefaultMenuMap;
+
+	IOnlineSessionPtr SessionInterface;
+
+	TSharedPtr<class FOnlineSessionSearch> SessionSearch;
+
+	void OnCreateSessionComplete(FName SessionName, bool Success);
+
+	void OnDestroySessionComplete(FName SessionName, bool Success);
+
+	void OnFindSessionsComplete(bool Success);
+
+	void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
+
+	FString DesiredServerName;
+
+	void CreateSession();
 	
 	
 };

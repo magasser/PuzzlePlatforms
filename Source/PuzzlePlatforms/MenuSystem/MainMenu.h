@@ -11,7 +11,20 @@
 
 class UButton;
 class UWidgetSwitcher;
+class UPanelWidget;
 class UEditableTextBox;
+
+USTRUCT()
+struct FServerData
+{
+	GENERATED_BODY()
+
+	FString ServerName;
+	FString HostUserName;
+	uint16 CurrentPlayers;
+	uint16 MaxPlayers;
+
+};
 
 /**
 *
@@ -24,11 +37,19 @@ class PUZZLEPLATFORMS_API UMainMenu : public UMenu
 
 public:
 
+	UMainMenu(const FObjectInitializer& ObjectInitializer);
+
 	virtual bool Initialize() override;
 
 	virtual void OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld) override;
 
+	void SetServerList(TArray<FServerData> ServerData);
+
+	void SelectIndex(uint32 Index);
+
 private:
+	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
+	TSubclassOf<UUserWidget> ServerRowWidget;
 
 	UPROPERTY(meta = (BindWidget))
 	UButton* HostButton;
@@ -43,7 +64,16 @@ private:
 	UButton* BackButton;
 
 	UPROPERTY(meta = (BindWidget))
+	UButton* BackButton2;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* HostGameButton;
+
+	UPROPERTY(meta = (BindWidget))
 	UButton* QuitButton;
+
+	UPROPERTY(meta = (BindWidget))
+	UEditableTextBox* ServerHostName;
 
 	UPROPERTY(meta = (BindWidget))
 	UWidgetSwitcher* MenuSwitcher;
@@ -55,13 +85,19 @@ private:
 	UWidget* MainMenu;
 
 	UPROPERTY(meta = (BindWidget))
-	UEditableTextBox* IPAddressField;
+	UWidget* HostMenu;
+
+	UPROPERTY(meta = (BindWidget))
+	UPanelWidget* ServerList;
 
 	UFUNCTION()
 	void HostServer();
 
 	UFUNCTION()
 	void OpenJoinMenu();
+
+	UFUNCTION()
+	void OpenHostMenu();
 
 	UFUNCTION()
 	void JoinServer();
@@ -71,5 +107,9 @@ private:
 
 	UFUNCTION()
 	void QuitGame();
+
+	TOptional<uint32> SelectedIndex;
+
+	void UpdateChildren();
 
 };

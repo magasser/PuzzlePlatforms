@@ -22,7 +22,7 @@ public:
 
 	void SetMenuInterface(IMenuInterface* MenuInterface);
 
-	void Setup();
+	virtual void Setup();
 
 	void Teardown();
 
